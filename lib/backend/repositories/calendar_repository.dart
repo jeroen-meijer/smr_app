@@ -1,0 +1,93 @@
+import 'dart:async';
+
+import 'package:device_calendar/device_calendar.dart';
+import 'package:meta/meta.dart';
+import 'package:smr_app/backend/api/api.dart';
+import 'package:smr_app/backend/models/models.dart';
+import 'package:smr_app/backend/repositories/repositories.dart';
+import 'package:smr_app/backend/stores/store.dart';
+
+class CalendarRepository extends Repository {
+  CalendarRepository._(Api api, this.appState) : super(api) {
+    _eventQueue.add([]);
+    if (hasCalendarSelected) {
+      _resetTimer();
+    }
+  }
+
+  static Future<CalendarRepository> init(Api api, AppStateStore appState) async {
+    await api.ensureCalendarPermission();
+
+    return CalendarRepository._(api, appState);
+  }
+
+  static const _eventCheckInterval = Duration(seconds: 10);
+  static const _eventTimespanLimit = Duration(minutes: 15);
+
+  final AppStateStore appState;
+
+  final _eventQueue = StreamController<List<Event>>.broadcast();
+
+  Timer _eventCheckTimer;
+
+  Stream<List<Event>> get eventQueue => _eventQueue.stream;
+  List<HandledEvent> get handledEvents => appState.handledEvents;
+  Calendar get selectedCalendar => appState.selectedCalendar;
+  set selectedCalendar(Calendar calendar) {
+    appState.selectedCalendar = calendar;
+    _resetTimer();
+  }
+
+  bool get hasCalendarSelected => appState.hasCalendarSelected;
+
+  void _resetTimer() {
+    _eventCheckTimer = Timer.periodic(_eventCheckInterval, (_) => _checkForNewEvents());
+    _checkForNewEvents();
+  }
+
+  Future<void> _checkForNewEvents() async {
+    print('${DateTime.now()} - _checkForNewEvents');
+    assert(hasCalendarSelected, 'No calendar is selected yet. Cannot check for events if no calendar is selected.');
+
+    final events = await api.getEventsForCalendar(
+      selectedCalendar,
+      start: DateTime.now(),
+      end: DateTime.now().add(_eventTimespanLimit),
+    );
+
+    final eventsToIgnore = handledEvents.map((handledEvent) => handledEvent.event);
+
+    final queue =
+        events.where((event) => !eventsToIgnore.map((event) => event.eventId).contains(event.eventId)).toList();
+
+    print(
+        '${DateTime.now()} - pushing events: [${queue.isEmpty ? 'NONE' : queue.map((event) => '${event.title} (${event.eventId})').join(', ')}]');
+    _eventQueue.add(queue);
+  }
+
+  // Class functions
+  void dispose() {
+    _eventCheckTimer.cancel();
+    _eventQueue.close();
+  }
+
+  Future<List<Calendar>> getCalendars() {
+    return api.getCalendars();
+  }
+
+  Future<List<Event>> getEventsForCalendar(
+    Calendar calendar, {
+    @required DateTime start,
+    @required DateTime end,
+  }) {
+    return api.getEventsForCalendar(calendar, start: start, end: end);
+  }
+
+  // Store functions
+
+  /// Either checks off or postpones an event's reminder from the `eventQueue`.
+  void handleEvent(HandledEvent handledEvent) {
+    appState.addHandledEvent(handledEvent);
+    _checkForNewEvents();
+  }
+}

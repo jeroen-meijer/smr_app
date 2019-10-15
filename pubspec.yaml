@@ -1,0 +1,40 @@
+name: smr_app
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.5.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_calendar: ^1.0.0+2
+  provider: ^3.1.0
+  state_persistence: ^0.0.6
+  json_annotation: ^3.0.0
+  font_awesome_flutter: ^8.5.0
+  flutter_lorem: ^1.1.0
+  flutter_camera_ml_vision: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^1.7.1
+  json_serializable: ^3.2.3
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Product Sans
+      fonts:
+        - asset: assets/fonts/Product-Sans/Product-Sans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Product-Sans/Product-Sans-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Product-Sans/Product-Sans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Product-Sans/Product-Sans-Bold-Italic.ttf
+          weight: 700
+          style: italic
