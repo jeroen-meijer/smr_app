@@ -1,38 +1,50 @@
-import 'dart:collection';
-
 import 'package:device_calendar/device_calendar.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:smr_app/backend/backend.dart';
 import 'package:smr_app/backend/models/handled_event.dart';
-import 'package:smr_app/ux/context.dart';
+import 'package:smr_app/ux/widgets/face_detection_camera.dart';
 import 'package:smr_app/ux/widgets/widget_utils.dart';
 
-class MainContainer extends StatefulWidget {
-  @override
-  _MainContainerState createState() => _MainContainerState();
-}
-
-class _MainContainerState extends State<MainContainer> with WidgetContext {
-  void onSelect(Calendar calendar) {
-    backend.calendarRepository.selectedCalendar = calendar;
-    setState(() {});
+class MainContainer extends StatelessWidget {
+  void _onFacesChanged(List<Face> faces) {
+    print('Faces: ${faces.length}');
   }
 
   @override
   Widget build(BuildContext context) {
+    final calendarRepository = Backend.of(context).calendarRepository;
+
     return Scaffold(
-      body: SafeArea(
-        child: !backend.calendarRepository.hasCalendarSelected ? CalendarPicker(onSelect: onSelect) : EventDisplay(),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: StreamBuilder<Calendar>(
+              initialData: calendarRepository.selectedCalendar,
+              stream: calendarRepository.selectedCalendarStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return loadingWidget;
+                }
+
+                if (!calendarRepository.hasCalendarSelected) {
+                  return CalendarPicker();
+                }
+
+                return EventDisplay();
+              },
+            ),
+          ),
+          FaceDetectionCamera(
+            onFacesChanged: _onFacesChanged,
+          ),
+        ],
       ),
     );
   }
 }
 
 class CalendarPicker extends StatelessWidget {
-  const CalendarPicker({Key key, this.onSelect}) : super(key: key);
-
-  final ValueChanged<Calendar> onSelect;
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -55,7 +67,7 @@ class CalendarPicker extends StatelessWidget {
                   for (final calendar in snapshot.data)
                     ListTile(
                       title: Text(calendar.name),
-                      onTap: () => onSelect(calendar),
+                      onTap: () => Backend.of(context).calendarRepository.selectedCalendar = calendar,
                     )
                 ],
               );
@@ -90,10 +102,12 @@ class EventDisplay extends StatelessWidget {
                 ListTile(
                   title: Text(event.title),
                   subtitle: Text(event.start.toString()),
-                  onTap: () => Backend.of(context).calendarRepository.handleEvent(HandledEvent(
-                        event: event,
-                        decision: EventDecision.checkOff,
-                      )),
+                  onTap: () => Backend.of(context).calendarRepository.handleEvent(
+                        HandledEvent(
+                          event: event,
+                          decision: EventDecision.checkOff,
+                        ),
+                      ),
                 ),
             ],
           );

@@ -31,12 +31,17 @@ class CalendarRepository extends Repository {
   Timer _eventCheckTimer;
 
   Stream<List<Event>> get eventQueue => _eventQueue.stream;
+
   List<HandledEvent> get handledEvents => appState.handledEvents;
+
   Calendar get selectedCalendar => appState.selectedCalendar;
+
   set selectedCalendar(Calendar calendar) {
     appState.selectedCalendar = calendar;
     _resetTimer();
   }
+
+  Stream<Calendar> get selectedCalendarStream => appState.selectedCalendarStream;
 
   bool get hasCalendarSelected => appState.hasCalendarSelected;
 

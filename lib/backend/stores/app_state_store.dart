@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:device_calendar/device_calendar.dart';
 import 'package:smr_app/backend/models/models.dart';
 import 'package:state_persistence/state_persistence.dart';
 import 'package:smr_app/backend/stores/store.dart';
 
 class AppStateStore extends Store {
-  AppStateStore._(this._data) : super(_data);
+  AppStateStore._(this._data) : super(_data) {
+    _selectedCalendarStream.add(selectedCalendar);
+  }
 
   static const _kStorage = JsonFileStorage(filename: 'smr_app_state_store.json');
   static const _kSaveTimeout = Duration(milliseconds: 500);
@@ -20,9 +24,16 @@ class AppStateStore extends Store {
 
   final PersistedData _data;
 
+  final StreamController<Calendar> _selectedCalendarStream = StreamController.broadcast();
+
   Calendar get selectedCalendar =>
       _data[_kSelectedCalendarKey] == null ? null : Calendar.fromJson(_data[_kSelectedCalendarKey]);
-  set selectedCalendar(Calendar value) => _data[_kSelectedCalendarKey] = value.toJson();
+  set selectedCalendar(Calendar value) {
+    _data[_kSelectedCalendarKey] = value.toJson();
+    _selectedCalendarStream.add(value);
+  }
+
+  Stream<Calendar> get selectedCalendarStream => _selectedCalendarStream.stream;
 
   bool get hasCalendarSelected => selectedCalendar != null;
 
