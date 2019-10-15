@@ -17,6 +17,7 @@ class SmrApp extends StatelessWidget {
     return Provider<Backend>.value(
       value: backend,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'SMR',
         theme: AppTheme.theme(),
         home: MainContainer(),

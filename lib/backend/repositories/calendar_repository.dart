@@ -22,7 +22,8 @@ class CalendarRepository extends Repository {
   }
 
   static const _eventCheckInterval = Duration(seconds: 10);
-  static const _eventTimespanLimit = Duration(minutes: 15);
+  
+  static const eventTimespanLimit = Duration(minutes: 15);
 
   final AppStateStore appState;
 
@@ -57,7 +58,7 @@ class CalendarRepository extends Repository {
     final events = await api.getEventsForCalendar(
       selectedCalendar,
       start: DateTime.now(),
-      end: DateTime.now().add(_eventTimespanLimit),
+      end: DateTime.now().add(eventTimespanLimit),
     );
 
     final eventsToIgnore = handledEvents.map((handledEvent) => handledEvent.event);

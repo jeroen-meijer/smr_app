@@ -7,19 +7,19 @@ final mockEvents = <Event>[
   Event(
     mockCalendars[0].id,
     eventId: 'mockEvent1',
-    title: 'Mock Event 1',
-    description: lorem(),
+    title: 'Medicatie innemen',
+    description: lorem(paragraphs: 1, words: 300),
   ),
   Event(
     mockCalendars[0].id,
     eventId: 'mockEvent2',
-    title: 'Mock Event 2',
-    description: lorem(),
+    title: 'Bezoek familie Huisbrechts',
+    // description: lorem(),
   ),
   Event(
     mockCalendars[0].id,
     eventId: 'mockEvent3',
-    title: 'Mock Event 3',
+    title: 'Ander soort evenement',
     description: lorem(),
   ),
   Event(
