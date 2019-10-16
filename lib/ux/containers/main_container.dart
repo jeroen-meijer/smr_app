@@ -7,8 +7,11 @@ import 'package:smr_app/ux/widgets/face_detection_camera.dart';
 import 'package:smr_app/ux/widgets/widget_utils.dart';
 
 class MainContainer extends StatelessWidget {
-  void _onFacesChanged(List<Face> faces) {
-    print('Faces: ${faces.length}');
+  void _onFacesChanged(
+    BuildContext context,
+    List<Face> faces,
+  ) {
+    Backend.of(context).faceService.registerFacesPresent(faces.isNotEmpty);
   }
 
   @override
@@ -35,8 +38,11 @@ class MainContainer extends StatelessWidget {
               },
             ),
           ),
-          FaceDetectionCamera(
-            onFacesChanged: _onFacesChanged,
+          Offstage(
+            offstage: false,
+            child: FaceDetectionCamera(
+              onFacesChanged: (faces) => _onFacesChanged(context, faces),
+            ),
           ),
         ],
       ),

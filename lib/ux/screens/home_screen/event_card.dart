@@ -1,6 +1,7 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:smr_app/backend/models/event_type.dart';
+import 'package:smr_app/utils.dart';
 import 'package:smr_app/ux/widgets/widget_utils.dart';
 
 class EventCard extends StatelessWidget {
@@ -29,7 +30,7 @@ class EventCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        event.title,
+                        toAlphanumeric(event.title),
                         style: TextStyle(
                           fontSize: 24,
                           color: eventType.color,

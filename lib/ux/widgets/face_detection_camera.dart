@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
+import 'package:smr_app/ux/context.dart';
 import 'package:smr_app/ux/widgets/ml_vision_camera.dart';
 
 class FaceDetectionCamera extends StatefulWidget {
@@ -12,7 +13,7 @@ class FaceDetectionCamera extends StatefulWidget {
   _FaceDetectionCameraState createState() => _FaceDetectionCameraState();
 }
 
-class _FaceDetectionCameraState extends State<FaceDetectionCamera> {
+class _FaceDetectionCameraState extends State<FaceDetectionCamera> with WidgetContext {
   int detectedFaces = 0;
 
   @override
@@ -32,10 +33,16 @@ class _FaceDetectionCameraState extends State<FaceDetectionCamera> {
                 return RotatedBox(
                   quarterTurns: 1,
                   child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Text(
-                      'Faces: $detectedFaces',
-                      style: const TextStyle(fontSize: 48, color: Colors.white),
+                    alignment: Alignment.topLeft,
+                    child: StreamBuilder<bool>(
+                      initialData: backend.faceService.facesPresent,
+                      stream: backend.faceService.facesPresentStream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          'Faces: $detectedFaces\nFacesPresent: ${snapshot.data}',
+                          style: const TextStyle(fontSize: 32, color: Colors.white),
+                        );
+                      },
                     ),
                   ),
                 );

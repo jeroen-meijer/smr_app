@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smr_app/backend/models/handled_event.dart';
+import 'package:smr_app/ux/ux_utils.dart';
 import 'package:smr_app/ux/widgets/widget_utils.dart';
 
 class EventButtons extends StatelessWidget {
@@ -22,8 +23,8 @@ class EventButtons extends StatelessWidget {
         Flexible(
           child: _EventButton(
             caption: 'Herinner',
-            color: Colors.pink,
-            icon: FontAwesomeIcons.clock,
+            color: getColorForEventDecision(EventDecision.postpone),
+            icon: getIconForEventDecision(EventDecision.postpone),
             enabled: enabled,
             onPressed: () => onDecide(EventDecision.postpone),
           ),
@@ -32,8 +33,8 @@ class EventButtons extends StatelessWidget {
         Flexible(
           child: _EventButton(
             caption: 'Vink af',
-            color: Colors.green,
-            icon: FontAwesomeIcons.check,
+            color: getColorForEventDecision(EventDecision.checkOff),
+            icon: getIconForEventDecision(EventDecision.checkOff),
             enabled: enabled,
             onPressed: () => onDecide(EventDecision.checkOff),
           ),

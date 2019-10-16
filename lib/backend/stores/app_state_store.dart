@@ -15,6 +15,7 @@ class AppStateStore extends Store {
 
   static const _kSelectedCalendarKey = 'selectedCalendar';
   static const _kHandledEventsKey = 'handledEvents';
+  static const _kUsernameKey = 'username';
 
   static Future<AppStateStore> init() async {
     final data = await PersistedData.load(_kStorage, _kSaveTimeout);
@@ -41,6 +42,11 @@ class AppStateStore extends Store {
       ? []
       : (_data[_kHandledEventsKey] as List).map((json) => HandledEvent.fromJson(json)).toList();
   set handledEvents(List<HandledEvent> value) => _data[_kHandledEventsKey] = value.map((handledEvent) => handledEvent.toJson()).toList();
+
+  String get username => _data[_kUsernameKey];
+  set username(String value) => _data[_kUsernameKey] = value;
+
+  bool get hasUsername => username != null && username.isNotEmpty;
 
   void addHandledEvent(HandledEvent handledEvent) {
     final newHandledEvents = handledEvents;
