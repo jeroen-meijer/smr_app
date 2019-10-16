@@ -33,14 +33,19 @@ class _EventListState extends State<EventList> with WidgetContext {
     });
 
     await backend.ttsService.respondToDecision(decision);
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 3));
+
+    final handledEvent = HandledEvent(
+      event,
+      decision: decision,
+      remindDate: DateTime.now().add(const Duration(minutes: 30)),
+    );
+    backend.calendarRepository.handleEvent(handledEvent);
 
     setState(() {
       _lastShownEventDecision = null;
+      _lastShownEventId = null;
     });
-
-    final handledEvent = HandledEvent(event: event, decision: decision);
-    backend.calendarRepository.handleEvent(handledEvent);
   }
 
   @override
@@ -97,22 +102,26 @@ class _EventListState extends State<EventList> with WidgetContext {
 
               assert(calendarWidget != null, 'calendarWidget must be set and not null.');
 
-              return Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: calendarWidget,
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Column(
+                  key: ValueKey('event-list${_shouldShowConfirmation ? '-showing-confirmation' : ''}${events.isNotEmpty ? '-with-event' : ''}'),
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: calendarWidget,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-                    child: EventButtons(
-                      enabled: !_shouldShowConfirmation && events.isNotEmpty,
-                      onDecide: (decision) => _onDecide(events.first, decision),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                      child: EventButtons(
+                        enabled: !_shouldShowConfirmation && events.isNotEmpty,
+                        onDecide: (decision) => _onDecide(events.first, decision),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),

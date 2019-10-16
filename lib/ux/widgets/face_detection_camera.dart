@@ -18,44 +18,44 @@ class _FaceDetectionCameraState extends State<FaceDetectionCamera> with WidgetCo
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: FittedBox(
-        child: SizedBox(
-          width: 175,
-          child: RotatedBox(
-            quarterTurns: 3,
-            child: MlVisionCamera<List<Face>>(
-              detector: FirebaseVision.instance.faceDetector().processImage,
-              cameraLensDirection: CameraLensDirection.front,
-              resolution: ResolutionPreset.medium,
-              overlayBuilder: (context) {
-                return RotatedBox(
-                  quarterTurns: 1,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: StreamBuilder<bool>(
-                      initialData: backend.faceService.facesPresent,
-                      stream: backend.faceService.facesPresentStream,
-                      builder: (context, snapshot) {
-                        return Text(
+    return FittedBox(
+      child: SizedBox(
+        width: 175,
+        child: RotatedBox(
+          quarterTurns: 1,
+          child: MlVisionCamera<List<Face>>(
+            detector: FirebaseVision.instance.faceDetector().processImage,
+            cameraLensDirection: CameraLensDirection.front,
+            resolution: ResolutionPreset.low,
+            overlayBuilder: (context) {
+              return RotatedBox(
+                quarterTurns: 3,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: StreamBuilder<bool>(
+                    initialData: backend.faceService.facesPresent,
+                    stream: backend.faceService.facesPresentStream,
+                    builder: (context, snapshot) {
+                      return Container(
+                        color: Colors.black.withOpacity(0.5),
+                        child: Text(
                           'Faces: $detectedFaces\nFacesPresent: ${snapshot.data}',
-                          style: const TextStyle(fontSize: 32, color: Colors.white),
-                        );
-                      },
-                    ),
+                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-              onResult: (faces) {
-                if (detectedFaces != faces.length) {
-                  setState(() {
-                    widget.onFacesChanged(faces);
-                    detectedFaces = faces.length;
-                  });
-                }
-              },
-            ),
+                ),
+              );
+            },
+            onResult: (faces) {
+              if (detectedFaces != faces.length) {
+                setState(() {
+                  widget.onFacesChanged(faces);
+                  detectedFaces = faces.length;
+                });
+              }
+            },
           ),
         ),
       ),

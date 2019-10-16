@@ -41,7 +41,8 @@ class AppStateStore extends Store {
   List<HandledEvent> get handledEvents => _data[_kHandledEventsKey] == null
       ? []
       : (_data[_kHandledEventsKey] as List).map((json) => HandledEvent.fromJson(json)).toList();
-  set handledEvents(List<HandledEvent> value) => _data[_kHandledEventsKey] = value.map((handledEvent) => handledEvent.toJson()).toList();
+  set handledEvents(List<HandledEvent> value) =>
+      _data[_kHandledEventsKey] = value.map((handledEvent) => handledEvent.toJson()).toList();
 
   String get username => _data[_kUsernameKey];
   set username(String value) => _data[_kUsernameKey] = value;
@@ -49,15 +50,11 @@ class AppStateStore extends Store {
   bool get hasUsername => username != null && username.isNotEmpty;
 
   void addHandledEvent(HandledEvent handledEvent) {
-    final newHandledEvents = handledEvents;
-
-    final existingIndex = newHandledEvents.map((e) => e.event.eventId).toList().indexOf(handledEvent.event.eventId);
-
-    if (existingIndex == -1) {
-      newHandledEvents.add(handledEvent);
-    } else {
-      newHandledEvents.replaceRange(existingIndex, existingIndex, [handledEvent]);
-    }
+    final newHandledEvents = handledEvents
+      ..removeWhere((existingHandledEvent) {
+        return existingHandledEvent.event.eventId == handledEvent.event.eventId;
+      })
+      ..add(handledEvent);
 
     handledEvents = newHandledEvents;
   }

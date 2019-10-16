@@ -26,10 +26,6 @@ class MainContainer extends StatelessWidget {
               initialData: calendarRepository.selectedCalendar,
               stream: calendarRepository.selectedCalendarStream,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return loadingWidget;
-                }
-
                 if (!calendarRepository.hasCalendarSelected) {
                   return CalendarPicker();
                 }
@@ -40,8 +36,16 @@ class MainContainer extends StatelessWidget {
           ),
           Offstage(
             offstage: false,
-            child: FaceDetectionCamera(
-              onFacesChanged: (faces) => _onFacesChanged(context, faces),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Opacity(
+                opacity: 0.9,
+                child: FaceDetectionCamera(
+                  onFacesChanged: (faces) {
+                    _onFacesChanged(context, faces);
+                  },
+                ),
+              ),
             ),
           ),
         ],

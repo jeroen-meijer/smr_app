@@ -6,6 +6,7 @@ import 'package:smr_app/backend/api/api.dart';
 import 'package:smr_app/backend/models/models.dart';
 import 'package:smr_app/backend/repositories/repositories.dart';
 import 'package:smr_app/backend/stores/store.dart';
+import 'package:smr_app/utils.dart';
 
 class CalendarRepository extends Repository {
   CalendarRepository._(Api api, this.appState) : super(api) {
@@ -22,7 +23,7 @@ class CalendarRepository extends Repository {
   }
 
   static const _eventCheckInterval = Duration(seconds: 10);
-  
+
   static const eventTimespanLimit = Duration(minutes: 15);
 
   final AppStateStore appState;
@@ -61,10 +62,16 @@ class CalendarRepository extends Repository {
       end: DateTime.now().add(eventTimespanLimit),
     );
 
-    final eventsToIgnore = handledEvents.map((handledEvent) => handledEvent.event);
+    final postponedEvents = safeWhere<HandledEvent>(handledEvents, (handledEvent) {
+      return handledEvent.decision == EventDecision.postpone && DateTime.now().compareTo(handledEvent.remindDate) == 1;
+    }).map((handledEvent) => handledEvent.event).toList();
 
-    final queue =
-        events.where((event) => !eventsToIgnore.map((event) => event.eventId).contains(event.eventId)).toList();
+    final queue = events
+            .where((event) => !handledEvents.map((handledEvent) => handledEvent.event.eventId).contains(event.eventId))
+            .toList()
+            ..addAll(postponedEvents);
+        // ..addAll()
+        
 
     print(
         '${DateTime.now()} - pushing events: [${queue.isEmpty ? 'NONE' : queue.map((event) => '${event.title} (${event.eventId})').join(', ')}]');

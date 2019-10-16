@@ -7,14 +7,25 @@ part 'handled_event.g.dart';
 
 @JsonSerializable()
 class HandledEvent {
-  HandledEvent({
-    @required this.event,
+  const HandledEvent(
+    this.event, {
     @required this.decision,
+    this.remindDate,
   });
+
+  const HandledEvent.checkOff(this.event)
+      : decision = EventDecision.checkOff,
+        remindDate = null;
+
+  const HandledEvent.postpone(
+    this.event, {
+    @required this.remindDate,
+  }) : decision = EventDecision.postpone;
 
   @EventConverter()
   final Event event;
   final EventDecision decision;
+  final DateTime remindDate;
 
   factory HandledEvent.fromJson(Map<String, dynamic> json) => _$HandledEventFromJson(json);
 

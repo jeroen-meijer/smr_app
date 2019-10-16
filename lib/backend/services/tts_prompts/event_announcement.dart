@@ -17,7 +17,7 @@ List<String> getEventAnnouncements(Event event) {
   final eventIsInFuture = event.start.compareTo(DateTime.now()) == 1;
 
   // final timePrompt = _getTimePrompt(event.start);
-  final timePrompt = '${event.start.hour}:${event.start.minute}';
+  final timePrompt = '${padLeft(event.start.hour, amount: 2)}:${padLeft(event.start.minute, amount: 2)}';
 
   final minutesRemaining = (DateTime.now().difference(event.start).inMinutes).abs();
   final minutesRemainingPrompt = '$minutesRemaining ${minutesRemaining == 1 ? 'minuut' : 'minuten'}';
