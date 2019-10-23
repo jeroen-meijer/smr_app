@@ -6,10 +6,14 @@ import 'package:smr_app/backend/services/tts_prompts/tts_prompts.dart';
 import 'package:smr_app/backend/stores/store.dart';
 
 class TtsService {
-  TtsService._(this.appState, FaceService faceService) : _prompts = TtsPrompts(appState) {
-    faceService.facesPresentStream.listen((present) {
+  TtsService._(this.appState, this.faceService) : _prompts = TtsPrompts(appState) {
+    faceService.facesPresentStream.listen((present) async {
       if (present) {
-        greet();
+        // await greet();
+        // await Future.delayed(const Duration(seconds: 2));
+        if (_latestEventPrompt != null) {
+          await announceEvent(latestEventPrompt);
+        }
       }
     });
   }
@@ -25,8 +29,19 @@ class TtsService {
   static const locale = 'nl_NL';
 
   final AppStateStore appState;
+  final FaceService faceService;
 
   final TtsPrompts _prompts;
+
+  Event _latestEventPrompt;
+  Event get latestEventPrompt => _latestEventPrompt;
+  set latestEventPrompt(Event value) {
+    _latestEventPrompt = value;
+    if (faceService.facesPresent) {
+      announceEvent(latestEventPrompt);
+    }
+  }
+
 
   String get username => appState.username;
   set username(String value) => appState.username = value;

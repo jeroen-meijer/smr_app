@@ -1,7 +1,10 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:smr_app/backend/api/mock/mock_events.dart';
 import 'package:smr_app/backend/models/handled_event.dart';
 import 'package:smr_app/backend/repositories/repositories.dart';
+import 'package:smr_app/backend/services/tts_prompts/tts_prompts.dart';
+import 'package:smr_app/utils.dart';
 import 'package:smr_app/ux/context.dart';
 import 'package:smr_app/ux/screens/home_screen/event_buttons.dart';
 import 'package:smr_app/ux/screens/home_screen/event_card.dart';
@@ -18,16 +21,27 @@ class _EventListState extends State<EventList> with WidgetContext {
 
   bool get _shouldShowConfirmation => _lastShownEventDecision != null;
 
-  void _announceEventOnce(Event event) {
+  Future<void> _announceEvent(Event event) async {
     if (_lastShownEventId == event.eventId) {
       return;
     }
 
     _lastShownEventId = event.eventId;
-    backend.ttsService.announceEvent(event);
+    backend.ttsService.latestEventPrompt = event;
+
+    await Future.delayed(const Duration(seconds: 7));
+
+    final answer = await backend.speechRecognitionService.recognizeIfPresent();
+
+    if (!answer.hasResponse) {
+      return;
+    }
+
+    await _onDecide(event, guessDecisionFromString(answer.text));
   }
 
   Future<void> _onDecide(Event event, EventDecision decision) async {
+    await backend.speechRecognitionService.cancel();
     setState(() {
       _lastShownEventDecision = decision;
     });
@@ -62,7 +76,8 @@ class _EventListState extends State<EventList> with WidgetContext {
             stream: backend.calendarRepository.eventQueue,
             initialData: const [],
             builder: (context, snapshot) {
-              final events = snapshot.data;
+              // final events = snapshot.data;
+              final events = [mockEvents.first];
 
               Widget calendarWidget;
 
@@ -97,7 +112,7 @@ class _EventListState extends State<EventList> with WidgetContext {
                   ],
                 );
 
-                _announceEventOnce(currentEvent);
+                _announceEvent(currentEvent);
               }
 
               assert(calendarWidget != null, 'calendarWidget must be set and not null.');
@@ -105,7 +120,8 @@ class _EventListState extends State<EventList> with WidgetContext {
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
                 child: Column(
-                  key: ValueKey('event-list${_shouldShowConfirmation ? '-showing-confirmation' : ''}${events.isNotEmpty ? '-with-event' : ''}'),
+                  key: ValueKey(
+                      'event-list${_shouldShowConfirmation ? '-showing-confirmation' : ''}${events.isNotEmpty ? '-with-event' : ''}'),
                   children: <Widget>[
                     Expanded(
                       child: Padding(
