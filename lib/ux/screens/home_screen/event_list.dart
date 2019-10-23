@@ -76,8 +76,7 @@ class _EventListState extends State<EventList> with WidgetContext {
             stream: backend.calendarRepository.eventQueue,
             initialData: const [],
             builder: (context, snapshot) {
-              // final events = snapshot.data;
-              final events = [mockEvents.first];
+              final events = snapshot.data;
 
               Widget calendarWidget;
 
