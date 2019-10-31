@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:smr_app/backend/api/api.dart';
 import 'package:smr_app/backend/repositories/repositories.dart';
 import 'package:smr_app/backend/services/services.dart';
-import 'package:smr_app/backend/services/speech_recognition_service.dart';
 import 'package:smr_app/backend/stores/store.dart';
 
 export 'api/api.dart';
@@ -16,6 +15,7 @@ class Backend {
     @required this.faceService,
     @required this.ttsService,
     @required this.speechRecognitionService,
+    @required this.animationService,
   });
 
   static Future<Backend> init(Api api) async {
@@ -24,6 +24,7 @@ class Backend {
     final faceService = FaceService();
     final ttsService = await TtsService.init(appState, faceService);
     final speechRecognitionService = await SpeechRecognitionService.init(appState, faceService);
+    final animationService = await AnimationService.init(appState, faceService);
 
     return Backend._(
       appState: appState,
@@ -31,6 +32,7 @@ class Backend {
       faceService: faceService,
       ttsService: ttsService,
       speechRecognitionService: speechRecognitionService,
+      animationService: animationService,
     );
   }
 
@@ -43,4 +45,5 @@ class Backend {
   final FaceService faceService;
   final TtsService ttsService;
   final SpeechRecognitionService speechRecognitionService;
+  final AnimationService animationService;
 }

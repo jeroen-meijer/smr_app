@@ -1,13 +1,8 @@
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:smr_app/backend/backend.dart';
+import 'package:smr_app/backend/services/services.dart';
 import 'package:smr_app/ux/screens/home_screen/event_list.dart';
-
-enum AnimationState {
-  closed,
-  awakened,
-  darting,
-  happy,
-  sad,
-}
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,22 +10,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var animationState = AnimationState.closed;
-
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         Flexible(
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Placeholder(color: Colors.black.withOpacity(0.2)),
-              Text(
-                '$animationState',
-                style: const TextStyle(fontSize: 24, fontFamily: 'Monospace'),
-              ),
-            ],
+          child: Center(
+            child: StreamBuilder<AnimationState>(
+              stream: Backend.of(context).animationService.animationStateStream,
+              initialData: Backend.of(context).animationService.currentAnimationState,
+              builder: (context, snapshot) {
+                final animationState = snapshot.hasData ? snapshot.data : AnimationState.awakened;
+                return FlareActor(
+                  'assets/flare/eyes.flr',
+                  animation: animationState.toString(),
+                );
+              },
+            ),
           ),
         ),
         Expanded(

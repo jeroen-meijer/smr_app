@@ -1,9 +1,8 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:smr_app/backend/api/mock/mock_events.dart';
 import 'package:smr_app/backend/models/handled_event.dart';
 import 'package:smr_app/backend/repositories/repositories.dart';
-import 'package:smr_app/backend/services/tts_prompts/tts_prompts.dart';
+import 'package:smr_app/backend/services/services.dart';
 import 'package:smr_app/utils.dart';
 import 'package:smr_app/ux/context.dart';
 import 'package:smr_app/ux/screens/home_screen/event_buttons.dart';
@@ -46,8 +45,13 @@ class _EventListState extends State<EventList> with WidgetContext {
       _lastShownEventDecision = decision;
     });
 
+    backend.animationService
+        .setAnimationState(decision == EventDecision.checkOff ? AnimationState.happy : AnimationState.sad);
+
     await backend.ttsService.respondToDecision(decision);
     await Future.delayed(const Duration(seconds: 3));
+
+    backend.animationService.setAnimationState(AnimationState.awakened);
 
     final handledEvent = HandledEvent(
       event,

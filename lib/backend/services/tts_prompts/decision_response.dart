@@ -2,7 +2,7 @@ List<String> getCheckOffDecisionResponse() {
   return [
     'Netjes! Goed gedaan.',
     'Top! Opgeslagen.',
-    'Mooi, afgevinkt.',
+    'Mooi. Afgevinkt.',
   ];
 }
 
