@@ -37,7 +37,7 @@ class TtsService {
   Event get latestEventPrompt => _latestEventPrompt;
   set latestEventPrompt(Event value) {
     _latestEventPrompt = value;
-    if (faceService.facesPresent) {
+    if (_latestEventPrompt != null && faceService.facesPresent) {
       announceEvent(latestEventPrompt);
     }
   }
