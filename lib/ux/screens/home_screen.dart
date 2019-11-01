@@ -15,12 +15,15 @@ class _HomePageState extends State<HomePage> {
     return Row(
       children: <Widget>[
         Flexible(
-          child: Center(
+          child: Container(
+            color: Colors.grey,
+            alignment: Alignment.center,
             child: StreamBuilder<AnimationState>(
               stream: Backend.of(context).animationService.animationStateStream,
               initialData: Backend.of(context).animationService.currentAnimationState,
               builder: (context, snapshot) {
-                final animationState = snapshot.hasData ? snapshot.data : AnimationState.awakened;
+                final facesPresent = Backend.of(context).faceService.facesPresent;
+                final animationState = snapshot.hasData ? snapshot.data : facesPresent ? AnimationState.awakened : AnimationState.closed;
                 return FlareActor(
                   'assets/flare/eyes.flr',
                   animation: animationState.toString(),
