@@ -17,16 +17,22 @@ class _HomePageState extends State<HomePage> {
         Flexible(
           child: Container(
             color: Colors.grey,
-            alignment: Alignment.center,
+            alignment: Alignment.topCenter,
             child: StreamBuilder<AnimationState>(
               stream: Backend.of(context).animationService.animationStateStream,
               initialData: Backend.of(context).animationService.currentAnimationState,
               builder: (context, snapshot) {
                 final facesPresent = Backend.of(context).faceService.facesPresent;
-                final animationState = snapshot.hasData ? snapshot.data : facesPresent ? AnimationState.awakened : AnimationState.closed;
-                return FlareActor(
-                  'assets/flare/eyes.flr',
-                  animation: animationState.toString(),
+                final animationState =
+                    snapshot.hasData ? snapshot.data : facesPresent ? AnimationState.awakened : AnimationState.closed;
+                return SizedBox(
+                  height: 300,
+                  child: FlareActor(
+                    'assets/flare/eyes.flr',
+                    animation: animationState.toString(),
+                    alignment: Alignment.topCenter,
+                    fit: BoxFit.fitHeight,
+                  ),
                 );
               },
             ),
