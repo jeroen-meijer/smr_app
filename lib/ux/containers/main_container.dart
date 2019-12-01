@@ -39,7 +39,7 @@ class MainContainer extends StatelessWidget {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Opacity(
-                opacity: 1.0,
+                opacity: 0.4,
                 child: FaceDetectionCamera(
                   onFacesChanged: (faces) {
                     _onFacesChanged(context, faces);

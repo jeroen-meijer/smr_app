@@ -18,21 +18,21 @@ List<String> getEventAnnouncements(Event event) {
 
   // final timePrompt = _getTimePrompt(event.start);
   final timePrompt = '${padLeft(event.start.hour, amount: 2)}:${padLeft(event.start.minute, amount: 2)}';
-
   final minutesRemaining = (DateTime.now().difference(event.start).inMinutes).abs();
-  final minutesRemainingPrompt = '$minutesRemaining ${minutesRemaining == 1 ? 'minuut' : 'minuten'}';
+
+  final elapsedTimePrompt = minutesRemaining > 60 ? '${minutesRemaining/60} uur' : '$minutesRemaining ${minutesRemaining == 1 ? 'minuut' : 'minuten'}';
 
   if (eventIsInFuture) {
     return [
       'Om $timePrompt heb je de afspraak $eventTitle.',
-      'Over $minutesRemainingPrompt start je afspraak $eventTitle.',
+      'Over $elapsedTimePrompt start je afspraak $eventTitle.',
       'Zometeen begint je afspraak $eventTitle.',
     ];
   } else {
     return [
-      'Je afspraak $eventTitle is $minutesRemainingPrompt geleden begonnen.',
+      'Je afspraak $eventTitle is $elapsedTimePrompt geleden begonnen.',
       'Om $timePrompt begon je afspraak $eventTitle.',
-      '$minutesRemainingPrompt geleden is je afspraak $eventTitle begonnen.'
+      '$elapsedTimePrompt geleden is je afspraak $eventTitle begonnen.'
     ];
   }
 }

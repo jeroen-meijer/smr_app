@@ -53,8 +53,6 @@ class _EventListState extends State<EventList> with WidgetContext {
     await backend.ttsService.respondToDecision(decision);
     await Future.delayed(const Duration(seconds: 3));
 
-    backend.animationService.setAnimationState(AnimationState.awakened);
-
     final handledEvent = HandledEvent(
       event,
       decision: decision,
