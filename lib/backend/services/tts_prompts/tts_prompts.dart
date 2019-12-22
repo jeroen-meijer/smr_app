@@ -20,7 +20,7 @@ class TtsPrompts {
   }
 
   String getEventAnnouncement(Event event) {
-    return 'Hey${appState.hasUsername ? ' ${appState.username}' : ''}. ${selectRandom(getEventAnnouncements(event))} Wil je hem afvinken, of zal ik je nog een keer herinneren?';
+    return 'Hey${appState.hasUsername ? ' ${appState.username}' : ''}. ${selectRandom(getEventAnnouncements(event))} Wat wil je met deze afspraak doen?';
   }
 
   String getDecisionResponse(EventDecision decision) {

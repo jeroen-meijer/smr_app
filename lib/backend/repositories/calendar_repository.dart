@@ -63,7 +63,11 @@ class CalendarRepository extends Repository {
     );
 
     final postponedEvents = safeWhere<HandledEvent>(handledEvents, (handledEvent) {
-      return handledEvent.decision == EventDecision.postpone && DateTime.now().compareTo(handledEvent.remindDate) == 1;
+      final eventWasPostponed = handledEvent.decision == EventDecision.postpone;
+      final eventIsTimedOut = DateTime.now().compareTo(handledEvent.remindDate) == 1;
+      final eventIsTooOld = eventIsTimedOut && (DateTime.now().difference(handledEvent.event.start).inHours).abs() > 24;
+
+      return eventWasPostponed && eventIsTimedOut && !eventIsTooOld;
     }).map((handledEvent) => handledEvent.event).toList();
 
     final queue = events

@@ -8,14 +8,12 @@ class AnimationState {
 
   static const closed = AnimationState._('closed');
   static const awakened = AnimationState._('awakened');
-  static const darting = AnimationState._('darting');
   static const happy = AnimationState._('happy');
   static const sad = AnimationState._('sad');
 
   static List<AnimationState> get values => [
         closed,
         awakened,
-        darting,
         happy,
         sad,
       ];

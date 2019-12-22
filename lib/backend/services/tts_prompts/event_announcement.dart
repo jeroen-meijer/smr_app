@@ -20,7 +20,7 @@ List<String> getEventAnnouncements(Event event) {
   final timePrompt = '${padLeft(event.start.hour, amount: 2)}:${padLeft(event.start.minute, amount: 2)}';
   final minutesRemaining = (DateTime.now().difference(event.start).inMinutes).abs();
 
-  final elapsedTimePrompt = minutesRemaining > 60 ? '${minutesRemaining/60} uur' : '$minutesRemaining ${minutesRemaining == 1 ? 'minuut' : 'minuten'}';
+  final elapsedTimePrompt = minutesRemaining > 60 ? '${(minutesRemaining/60).round()} uur' : '$minutesRemaining ${minutesRemaining == 1 ? 'minuut' : 'minuten'}';
 
   if (eventIsInFuture) {
     return [

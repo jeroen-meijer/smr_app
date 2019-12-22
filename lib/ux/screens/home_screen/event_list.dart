@@ -1,5 +1,6 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:smr_app/backend/api/mock/mock_events.dart';
 import 'package:smr_app/backend/models/handled_event.dart';
 import 'package:smr_app/backend/repositories/repositories.dart';
 import 'package:smr_app/backend/services/services.dart';
@@ -18,6 +19,8 @@ class _EventListState extends State<EventList> with WidgetContext {
   String _lastShownEventId;
   EventDecision _lastShownEventDecision;
 
+  bool _eventShouldBeHandled = false;
+
   bool get _shouldShowConfirmation => _lastShownEventDecision != null;
 
   Future<void> _announceEvent(Event event) async {
@@ -28,21 +31,27 @@ class _EventListState extends State<EventList> with WidgetContext {
     _lastShownEventId = event.eventId;
     backend.ttsService.latestEventPrompt = event;
 
-    await Future.delayed(const Duration(seconds: 7));
+    _eventShouldBeHandled = true;
 
-    final answer = await backend.speechRecognitionService.recognizeIfPresent();
+    await Future.delayed(const Duration(seconds: 6));
 
-    if (!answer.hasResponse) {
-      return;
+    if (_eventShouldBeHandled) {
+      final answer = await backend.speechRecognitionService.recognizeIfPresent();
+
+      if (!answer.hasResponse) {
+        return;
+      }
+
+      await _onDecide(event, guessDecisionFromString(answer.text));
     }
-
-    await _onDecide(event, guessDecisionFromString(answer.text));
   }
 
   Future<void> _onDecide(Event event, EventDecision decision) async {
+    _eventShouldBeHandled = false;
+    
     await backend.speechRecognitionService.cancel();
     backend.ttsService.latestEventPrompt = null;
-    
+
     setState(() {
       _lastShownEventDecision = decision;
     });
