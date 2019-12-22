@@ -48,7 +48,7 @@ class _EventListState extends State<EventList> with WidgetContext {
 
   Future<void> _onDecide(Event event, EventDecision decision) async {
     _eventShouldBeHandled = false;
-    
+
     await backend.speechRecognitionService.cancel();
     backend.ttsService.latestEventPrompt = null;
 

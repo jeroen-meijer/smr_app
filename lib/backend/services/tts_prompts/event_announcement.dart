@@ -1,15 +1,5 @@
-import 'dart:math' as math;
-
 import 'package:device_calendar/device_calendar.dart';
 import 'package:smr_app/utils.dart';
-
-// String _getTimePrompt(DateTime dateTime) {
-//   final minutesAreAlreadyRounded = (dateTime.minute % 5) == 0;
-//   final roundedMinutes = ((dateTime.minute.toDouble() / 5.0).round()) * 5;
-
-//   String prompt = minutesAreAlreadyRounded ? 'om' : 'rond';
-
-// }
 
 List<String> getEventAnnouncements(Event event) {
   final eventTitle = toAlphanumeric(event.title);

@@ -61,6 +61,10 @@ class CalendarRepository extends Repository {
       start: DateTime.now(),
       end: DateTime.now().add(eventTimespanLimit),
     );
+    print(
+      '... original events - '
+      '[${events.isEmpty ? 'NONE' : events.map((event) => '${event.title} (${event.eventId})').join(', ')}]',
+    );
 
     final postponedEvents = safeWhere<HandledEvent>(handledEvents, (handledEvent) {
       final eventWasPostponed = handledEvent.decision == EventDecision.postpone;
@@ -70,15 +74,21 @@ class CalendarRepository extends Repository {
       return eventWasPostponed && eventIsTimedOut && !eventIsTooOld;
     }).map((handledEvent) => handledEvent.event).toList();
 
+    print(
+      '... postponed events - '
+      '[${postponedEvents.isEmpty ? 'NONE' : postponedEvents.map((event) => '${event.title} (${event.eventId})').join(', ')}]',
+    );
+
     final queue = events
-            .where((event) => !handledEvents.map((handledEvent) => handledEvent.event.eventId).contains(event.eventId))
-            .toList()
-            ..addAll(postponedEvents);
-        // ..addAll()
-        
+        .where((event) => !handledEvents.map((handledEvent) => handledEvent.event.eventId).contains(event.eventId))
+        .toList()
+          ..addAll(postponedEvents);
+    // ..addAll()
 
     print(
-        '${DateTime.now()} - pushing events: [${queue.isEmpty ? 'NONE' : queue.map((event) => '${event.title} (${event.eventId})').join(', ')}]');
+      '${DateTime.now()} - pushing events: '
+      '[${queue.isEmpty ? 'NONE' : queue.map((event) => '${event.title} (${event.eventId})').join(', ')}]',
+    );
     _eventQueue.add(queue);
   }
 
